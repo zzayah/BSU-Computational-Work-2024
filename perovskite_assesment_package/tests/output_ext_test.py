@@ -1,4 +1,4 @@
-from pvskiassess import Extract
+from perovskite_assessment import Extract
 import pytest
 
 # Example Usage:
