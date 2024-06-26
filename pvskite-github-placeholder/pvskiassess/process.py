@@ -6,7 +6,7 @@ from ase.visualize import view
 from ase.io import read, write
 from ase import io
 
-def process_cif_file(filepath):
+def ABSite(action, filepath):
     # Extract filename without extension
     FileName = filepath.split('.')[0]
     FileType = filepath.split('.')[-1]
@@ -221,24 +221,103 @@ def process_cif_file(filepath):
             VisualizeLayers.append("A")
 
     if VisualizeLayers[0] == 'B':
-        AtomsLayer = AllLayers[0] + "_SB"
+        AtomsLayerB_R = AllLayers[0] + "_SB"
     elif VisualizeLayers[len(VisualizeLayers) - 1] == 'B':
-        AtomsLayer = AllLayers[len(VisualizeLayers) - 1] + "_SB"
-    for i in range(0, len(VisualizeLayers)):
-        if VisualizeLayers[i] == 'B':
-            if VisualizeLayers[i - 1] == 'A' and VisualizeLayers[i + 1] == 'A':
-                AtomsLayer = AllLayers[i] + "_SB"
+        AtomsLayerB_R = AllLayers[len(VisualizeLayers) - 1] + "_SB"
+    
+    if VisualizeLayers[0] == 'A':
+        AtomsLayerA_R = AllLayers[0] + "_SB"
+    if VisualizeLayers[len(VisualizeLayers) - 1] == 'A':
+        AtomsLayerA_R = AllLayers[len(VisualizeLayers) - 1] + "_SB"
+    
+
 
     NumberOfLayers = len(AllLayers)
-
+    print(AllLayers)
+    print(VisualizeLayers)
+    #it has the perfect layers to delete
     AtomNumber = []
     for layer in AllLayers:
-        NumberOfAtoms = len(globals()[layer])
-        AtomNumber.append(NumberOfAtoms)
+        globals()[layer+"_SB"] = []
+        
+    for atom in read(SiteBase):
+        ZName = "Z_" + str(atom.position[2]) + "_SB"
+        globals()[ZName].append([atom.symbol, atom.position[0], atom.position[1], atom.index])
+    
+    for layer in AllLayers:
+        LName = layer+"_SB"
+        print(LName, globals()[LName])    
+    NumberOfAtoms = len(globals()[layer+"_SB"])
+    AtomNumber.append(NumberOfAtoms)
+    print(AtomNumber)
 
-    # return FileName, AtomNumber, NumberOfLayers
+    FileA = "ASite_"+FileName+".xyz"
+    FileB = "BSite_"+FileName+".xyz"
+    def CreateA():
+        # return FileName, AtomNumber, NumberOfLayers
+        with open(FileA, 'w') as f:
+            f.write('')
+        AtomsOnLayer = globals()[AtomsLayerB_R]
+        atomNumbersL = len(read(SiteBase))-len(AtomsOnLayer)
+
+        with open('General_' + FileName + '.xyz', 'r') as f:
+            for line in f:
+                if 'Lattice=' in line:
+                    lattice_info = line.strip()
+        with open(FileA, 'a') as f:
+            f.write(f"{atomNumbersL}\n")
+        with open(FileA, 'a') as f:
+            f.write(f"{lattice_info}\n")
+
+        for atom in ViewBase:
+            if [atom.symbol, atom.position[0], atom.position[1], atom.index] not in AtomsOnLayer:
+                with open(FileA, 'a') as f:
+                    f.write(f"{atom_to_xyz_line(atom)}")
+    def CreateB():
+        with open(FileB, 'w') as f:
+            f.write('')
+        AtomsOnLayer = globals()[AtomsLayerA_R]
+        atomNumbersL = len(read(SiteBase))-len(AtomsOnLayer)
+
+        with open('General_' + FileName + '.xyz', 'r') as f:
+            for line in f:
+                if 'Lattice=' in line:
+                    lattice_info = line.strip()
+        with open(FileB, 'a') as f:
+            f.write(f"{atomNumbersL}\n")
+        with open(FileB, 'a') as f:
+            f.write(f"{lattice_info}\n")
+
+        for atom in ViewBase:
+            if [atom.symbol, atom.position[0], atom.position[1], atom.index] not in AtomsOnLayer:
+                with open(FileB, 'a') as f:
+                    f.write(f"{atom_to_xyz_line(atom)}")
+    if action == "Both":
+        CreateA()
+        CreateB()
+    if action == "A":
+        CreateA()
+    if action == "B":
+        CreateA()
+
+def Create_Structs(filepath, write_to: str = "./"):
+    action = "Both"
+    ABSite(action, filepath)
+    return # returns nothing. writes A & B site .xyz strutures to specifced "write_to". If write_to not defied, writes to current diretory (./).
+
+
+def Create_Struct_A(filepath, write_to: str = "./"):
+    action = "A"
+    ABSite(action, filepath)
+    return # returns nothing. writes A site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
+
+
+def Create_Struct_B(filepath, write_to: str = "./"):
+    action = "B"
+    ABSite(action, filepath)
+    return # returns nothing. writes B site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
 
 # Example usage:
-filepath = 'SrTiO3.cif'
-process_cif_file(filepath)
+filepath = 'LaNiO3.cif'
+Create_Structs(filepath)
 
