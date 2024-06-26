@@ -1,4 +1,4 @@
-# from pvskiassess.input_file_generation import Generation
+from pvskiassess import Generation, Extraction
 
 # Example Usage:
 cluster_name = "your_cluster_name"
