@@ -233,8 +233,6 @@ def ABSite(action, filepath):
 
 
     NumberOfLayers = len(AllLayers)
-    print(AllLayers)
-    print(VisualizeLayers)
     #it has the perfect layers to delete
     AtomNumber = []
     for layer in AllLayers:
@@ -246,10 +244,8 @@ def ABSite(action, filepath):
     
     for layer in AllLayers:
         LName = layer+"_SB"
-        print(LName, globals()[LName])    
     NumberOfAtoms = len(globals()[layer+"_SB"])
     AtomNumber.append(NumberOfAtoms)
-    print(AtomNumber)
 
     FileA = "ASite_"+FileName+".xyz"
     FileB = "BSite_"+FileName+".xyz"
@@ -273,6 +269,33 @@ def ABSite(action, filepath):
             if [atom.symbol, atom.position[0], atom.position[1], atom.index] not in AtomsOnLayer:
                 with open(FileA, 'a') as f:
                     f.write(f"{atom_to_xyz_line(atom)}")
+                # Read the atomic structure from XYZ file
+        atomsA = read(FileA)
+
+        # Get the current cell parameters
+        cell_paramsA = atomsA.get_cell()
+
+        # Modify the cell dimensions to change vacuum size (adjust along the z-axis)
+        vacuum_size = 10.0  # Adjust this value to change the size of the vacuum
+        cell_paramsA[2, 2] += vacuum_size  # Increase or decrease vacuum size along z-axis
+
+        # Calculate current middle along the z-axis
+        middle_zA = (cell_paramsA[2, 2] + cell_paramsA[0, 2]) / 2.0
+
+        # Calculate shift needed to center the structure
+        shift_zA = middle_zA - np.mean(atomsA.positions[:, 2])
+
+
+        # Shift positions of all atoms to center the vacuum
+        atomsA.positions[:, 2] += shift_zA
+
+        # Set the modified cell parameters back to the structure
+        atomsA.set_cell(cell_paramsA)
+
+        # Visualize the structure with modified vacuum size and centered along the z-axis
+        view(atomsA)
+   
+    
     def CreateB():
         with open(FileB, 'w') as f:
             f.write('')
@@ -292,6 +315,35 @@ def ABSite(action, filepath):
             if [atom.symbol, atom.position[0], atom.position[1], atom.index] not in AtomsOnLayer:
                 with open(FileB, 'a') as f:
                     f.write(f"{atom_to_xyz_line(atom)}")
+            # Read the atomic structure from XYZ file
+        
+        atomsB = read(FileB)
+        # Get the current cell parameters
+    
+        cell_paramsB = atomsB.get_cell()
+        # Modify the cell dimensions to change vacuum size (adjust along the z-axis)
+        vacuum_size = 10.0  # Adjust this value to change the size of the vacuum
+  
+        cell_paramsB[2, 2] += vacuum_size
+        # Calculate current middle along the z-axis
+     
+        middle_zB = (cell_paramsB[2, 2] + cell_paramsB[0, 2]) / 2.0
+        # Calculate shift needed to center the structure
+ 
+        shift_zB = middle_zB - np.mean(atomsB.positions[:, 2])
+
+        # Shift positions of all atoms to center the vacuum
+
+        atomsB.positions[:, 2] += shift_zB
+        # Set the modified cell parameters back to the structure
+
+        atomsB.set_cell(cell_paramsB)
+        # Visualize the structure with modified vacuum size and centered along the z-axis
+
+        view(atomsB)
+    
+    
+    
     if action == "Both":
         CreateA()
         CreateB()
@@ -299,6 +351,9 @@ def ABSite(action, filepath):
         CreateA()
     if action == "B":
         CreateA()
+
+
+
 
 def Create_Structs(filepath, write_to: str = "./"):
     action = "Both"
