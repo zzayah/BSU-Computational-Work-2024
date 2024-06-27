@@ -376,7 +376,4 @@ def Create_Struct_B(filepath, write_to: str = "./"):
     ABSite(action, filepath)
     return # returns nothing. writes B site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
 
-# Example usage:
-filepath = 'SrTiO3.cif'
-Create_Structs(filepath)
 
