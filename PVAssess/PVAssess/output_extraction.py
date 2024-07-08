@@ -15,7 +15,7 @@ def _extract_energy_from_file(file_path):
 
 def _process_folders(base_folder, start, end, df):
     for i in range(start, end):
-        for j in range(start, end):
+        for j in range(0, 8):
             folder_name = f"{i}-{j}"
             folder_path = os.path.join(base_folder, folder_name)
             if os.path.isdir(folder_path):
