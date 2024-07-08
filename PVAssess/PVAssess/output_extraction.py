@@ -30,7 +30,7 @@ def Extract(file_path, absorbates=None):
 
     # Check if file_path is a filepath or just a filename
     if os.path.dirname(file_path):
-        raise ValueError("Input file_path should be just a filename, not a filepath.")
+        raise ValueError("Inputted file_path should be the name of your material.")
     
     save_dirs = []
     # Extract the material name from the file path (e.g., SrCoO3 from SrCoO3.xyz)

@@ -3,7 +3,21 @@ from ase import io
 from ase.build import add_adsorbate
 from ase.calculators.espresso import Espresso, EspressoProfile
 
-def Generate(cluster_name, cluster_command, material, pseudopotentials=None, input_data=None):
+def Generate(material, cluster_name="Borah", cluster_username=None, cluster_command=None, psuedo_dir=None, scratch_dir=None, pseudopotentials=None, input_data=None):
+
+    if cluster_username is None:
+        raise ValueError("Please specify your cluster username.")
+    if cluster_command is None:
+        print("As of 7/2/24, the cluster_command perameter for the Generate function may be == "", though this is subject to change in future QE or ASE versions. If you choose to leave this field empty, please ensure that the cluster command can be seen in the .pwi files.")
+        # raise ValueError("Please specify your cluster command.")
+    if psuedo_dir is None and cluster_name == "Borah":
+        psuedo_dir = f"/bsuhome/{cluster_username}/q-e/pseudo"
+    elif psuedo_dir is None:
+        raise ValueError("Please specify the path to the pseudopotentials directory in your cluster directory.")
+    if scratch_dir is None and cluster_name == "Borah":
+        scratch_dir = f"/bsuhome/{cluster_username}/scratch"
+    elif scratch_dir is None:
+        raise ValueError("Please specify the path to the scratch directory in your cluster directory.")
 
     # All SSSP_acc_PBE Psuedopotentials for QE
     default_pseudopotentials = {
@@ -128,11 +142,11 @@ def Generate(cluster_name, cluster_command, material, pseudopotentials=None, inp
     if input_data is None:
         input_data = default_input_data
 
-    input_data['control']['outdir'] = f'/bsuhome/{cluster_name}/scratch'
+    input_data['control']['outdir'] = f'/bsuhome/{cluster_username}/scratch'
 
     profile = EspressoProfile(
         command=cluster_command,
-        pseudo_dir=f"/bsuhome/{cluster_name}/q-e/pseudo"
+        pseudo_dir=psuedo_dir,
     )
 
     header_folder = material[:-4]  # Create the header folder based on the material name without .xyz
