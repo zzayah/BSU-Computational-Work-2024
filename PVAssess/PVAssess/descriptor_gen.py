@@ -1,5 +1,3 @@
-import ase 
-
-def Descriptor_Gen():
+def Descriptors():
     
-    return
+    return None

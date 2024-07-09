@@ -6,13 +6,14 @@ from ase.visualize import view
 from ase.io import read, write
 from ase import io
 
+
 def ABSite(action, filepath):
     # Extract filename without extension
     FileName = filepath.split('.')[0]
     FileType = filepath.split('.')[-1]
 
     File = read(filepath)
-    
+
     CompoundA = ''
     CompoundB = ''
     Move = 0
@@ -37,7 +38,7 @@ def ABSite(action, filepath):
     while CompoundA not in corner_atoms:
         corner_atoms = []
         supercell_atoms.rotate(rotation_offset, 'z')
-        
+
         min_x = np.max(supercell_atoms.positions[:, 0])
         min_y = np.max(supercell_atoms.positions[:, 1])
         max_z = np.min(supercell_atoms.positions[:, 2])
@@ -57,7 +58,7 @@ def ABSite(action, filepath):
         for atom in supercell_atoms:
             if f"{atom.position[0]:.8f}" == f"{min_x:.8f}" and f"{atom.position[1]:.8f}" == f"{min_y:.8f}":
                 corner_atoms.append(atom.symbol)
-        
+
         if rotation_offset > 0:
             displacement = [-min_x, -min_y, 0]
             supercell_atoms.translate(displacement)
@@ -93,9 +94,11 @@ def ABSite(action, filepath):
         symbol = atom.symbol
         coordinates = atom.position
         if len(symbol) == 2:
-            line = f"{symbol}      {coordinates[0]:.8f}         {coordinates[1]:.8f}        {coordinates[2]:.8f}         {ElementCorrespondentList[atom.symbol]}\n"
+            line = f"{symbol}      {coordinates[0]:.8f}         {coordinates[1]:.8f}        {
+                coordinates[2]:.8f}         {ElementCorrespondentList[atom.symbol]}\n"
         else:
-            line = f"{symbol}       {coordinates[0]:.8f}         {coordinates[1]:.8f}        {coordinates[2]:.8f}         {ElementCorrespondentList[atom.symbol]}\n"
+            line = f"{symbol}       {coordinates[0]:.8f}         {coordinates[1]:.8f}        {
+                coordinates[2]:.8f}         {ElementCorrespondentList[atom.symbol]}\n"
         return line
 
     atomNumbers = 0
@@ -136,7 +139,8 @@ def ABSite(action, filepath):
     center_x_rotated = min_coords[0]
     center_y_rotated = min_coords[1]
     center_z_rotated = min_coords[2]
-    GeneralFile.positions -= [center_x_rotated, center_y_rotated, center_z_rotated]
+    GeneralFile.positions -= [center_x_rotated,
+                              center_y_rotated, center_z_rotated]
 
     GeneralFile.set_cell([vacuum_size_x, vacuum_size_y, vacuum_size_z])
     write(General, GeneralFile)
@@ -153,7 +157,8 @@ def ABSite(action, filepath):
         for atom in GeneralFile:
             if atom.position[2] == Z:
                 if [atom.symbol, atom.position[0], atom.position[1], atom.index] not in globals()[ZLayerName]:
-                    globals()[ZLayerName].append([atom.symbol, atom.position[0], atom.position[1], atom.index])
+                    globals()[ZLayerName].append(
+                        [atom.symbol, atom.position[0], atom.position[1], atom.index])
 
     GreatestXVal = 0
     GreatestYVal = 0
@@ -224,24 +229,23 @@ def ABSite(action, filepath):
         AtomsLayerB_R = AllLayers[0] + "_SB"
     elif VisualizeLayers[len(VisualizeLayers) - 1] == 'B':
         AtomsLayerB_R = AllLayers[len(VisualizeLayers) - 1] + "_SB"
-    
+
     if VisualizeLayers[0] == 'A':
         AtomsLayerA_R = AllLayers[0] + "_SB"
     if VisualizeLayers[len(VisualizeLayers) - 1] == 'A':
         AtomsLayerA_R = AllLayers[len(VisualizeLayers) - 1] + "_SB"
-    
-
 
     NumberOfLayers = len(AllLayers)
-    #it has the perfect layers to delete
+    # it has the perfect layers to delete
     AtomNumber = []
     for layer in AllLayers:
         globals()[layer+"_SB"] = []
-        
+
     for atom in read(SiteBase):
         ZName = "Z_" + str(atom.position[2]) + "_SB"
-        globals()[ZName].append([atom.symbol, atom.position[0], atom.position[1], atom.index])
-    
+        globals()[ZName].append(
+            [atom.symbol, atom.position[0], atom.position[1], atom.index])
+
     for layer in AllLayers:
         LName = layer+"_SB"
     NumberOfAtoms = len(globals()[layer+"_SB"])
@@ -249,6 +253,7 @@ def ABSite(action, filepath):
 
     FileA = "ASite_"+FileName+".xyz"
     FileB = "BSite_"+FileName+".xyz"
+
     def CreateA():
         # return FileName, AtomNumber, NumberOfLayers
         with open(FileA, 'w') as f:
@@ -277,14 +282,14 @@ def ABSite(action, filepath):
 
         # Modify the cell dimensions to change vacuum size (adjust along the z-axis)
         vacuum_size = 10.0  # Adjust this value to change the size of the vacuum
-        cell_paramsA[2, 2] += vacuum_size  # Increase or decrease vacuum size along z-axis
+        # Increase or decrease vacuum size along z-axis
+        cell_paramsA[2, 2] += vacuum_size
 
         # Calculate current middle along the z-axis
         middle_zA = (cell_paramsA[2, 2] + cell_paramsA[0, 2]) / 2.0
 
         # Calculate shift needed to center the structure
         shift_zA = middle_zA - np.mean(atomsA.positions[:, 2])
-
 
         # Shift positions of all atoms to center the vacuum
         atomsA.positions[:, 2] += shift_zA
@@ -294,8 +299,7 @@ def ABSite(action, filepath):
 
         # Visualize the structure with modified vacuum size and centered along the z-axis
         view(atomsA)
-   
-    
+
     def CreateB():
         with open(FileB, 'w') as f:
             f.write('')
@@ -316,20 +320,20 @@ def ABSite(action, filepath):
                 with open(FileB, 'a') as f:
                     f.write(f"{atom_to_xyz_line(atom)}")
             # Read the atomic structure from XYZ file
-        
+
         atomsB = read(FileB)
         # Get the current cell parameters
-    
+
         cell_paramsB = atomsB.get_cell()
         # Modify the cell dimensions to change vacuum size (adjust along the z-axis)
         vacuum_size = 10.0  # Adjust this value to change the size of the vacuum
-  
+
         cell_paramsB[2, 2] += vacuum_size
         # Calculate current middle along the z-axis
-     
+
         middle_zB = (cell_paramsB[2, 2] + cell_paramsB[0, 2]) / 2.0
         # Calculate shift needed to center the structure
- 
+
         shift_zB = middle_zB - np.mean(atomsB.positions[:, 2])
 
         # Shift positions of all atoms to center the vacuum
@@ -341,9 +345,7 @@ def ABSite(action, filepath):
         # Visualize the structure with modified vacuum size and centered along the z-axis
 
         view(atomsB)
-    
-    
-    
+
     if action == "Both":
         CreateA()
         CreateB()
@@ -353,21 +355,22 @@ def ABSite(action, filepath):
         CreateA()
 
 
-
-
 def Create_Structs(filepath, write_to: str = "./"):
     action = "Both"
     ABSite(action, filepath)
-    return # returns nothing. writes A & B site .xyz strutures to specifced "write_to". If write_to not defied, writes to current diretory (./).
+    # returns nothing. writes A & B site .xyz strutures to specifced "write_to". If write_to not defied, writes to current diretory (./).
+    return
 
 
 def Create_Struct_A(filepath, write_to: str = "./"):
     action = "A"
     ABSite(action, filepath)
-    return # returns nothing. writes A site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
+    # returns nothing. writes A site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
+    return
 
 
 def Create_Struct_B(filepath, write_to: str = "./"):
     action = "B"
     ABSite(action, filepath)
-    return # returns nothing. writes B site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
+    # returns nothing. writes B site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
+    return

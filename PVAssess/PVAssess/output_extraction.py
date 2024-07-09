@@ -2,6 +2,7 @@ import os
 import re
 import pandas as pd
 
+
 def _extract_energy_from_file(file_path):
     with open(file_path, "r") as f:
         lines = f.readlines()
@@ -12,6 +13,7 @@ def _extract_energy_from_file(file_path):
                 if energy:
                     return float(energy.group(0))
     return None
+
 
 def _process_folders(base_folder, start, end, df):
     for i in range(start, end):
@@ -25,13 +27,15 @@ def _process_folders(base_folder, start, end, df):
                     if energy is not None:
                         df.loc[len(df)] = [i, j, energy]
 
+
 def Extract(file_path, absorbates=None):
     absorbates = absorbates if absorbates else ["O", "H", "OOH", "OH"]
 
     # Check if file_path is a filepath or just a filename
     if os.path.dirname(file_path):
-        raise ValueError("Inputted file_path should be the name of your material.")
-    
+        raise ValueError(
+            "Inputted file_path should be the name of your material.")
+
     save_dirs = []
     # Extract the material name from the file path (e.g., SrCoO3 from SrCoO3.xyz)
     material_name = os.path.basename(file_path).replace('.xyz', '')

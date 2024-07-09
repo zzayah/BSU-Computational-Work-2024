@@ -3,6 +3,7 @@ from ase import io
 from ase.build import add_adsorbate
 from ase.calculators.espresso import Espresso, EspressoProfile
 
+
 def Generate(material, cluster_name="Borah", cluster_username=None, cluster_command=None, psuedo_dir=None, scratch_dir=None, pseudopotentials=None, input_data=None):
 
     if cluster_username is None:
@@ -13,11 +14,13 @@ def Generate(material, cluster_name="Borah", cluster_username=None, cluster_comm
     if psuedo_dir is None and cluster_name == "Borah":
         psuedo_dir = f"/bsuhome/{cluster_username}/q-e/pseudo"
     elif psuedo_dir is None:
-        raise ValueError("Please specify the path to the pseudopotentials directory in your cluster directory.")
+        raise ValueError(
+            "Please specify the path to the pseudopotentials directory in your cluster directory.")
     if scratch_dir is None and cluster_name == "Borah":
         scratch_dir = f"/bsuhome/{cluster_username}/scratch"
     elif scratch_dir is None:
-        raise ValueError("Please specify the path to the scratch directory in your cluster directory.")
+        raise ValueError(
+            "Please specify the path to the scratch directory in your cluster directory.")
 
     # All SSSP_acc_PBE Psuedopotentials for QE
     default_pseudopotentials = {
@@ -149,8 +152,10 @@ def Generate(material, cluster_name="Borah", cluster_username=None, cluster_comm
         pseudo_dir=psuedo_dir,
     )
 
-    header_folder = material[:-4]  # Create the header folder based on the material name without .xyz
-    os.makedirs(header_folder, exist_ok=True)  # Ensure the header folder exists
+    # Create the header folder based on the material name without .xyz
+    header_folder = material[:-4]
+    # Ensure the header folder exists
+    os.makedirs(header_folder, exist_ok=True)
 
     save_dirs = []
 
@@ -163,7 +168,8 @@ def Generate(material, cluster_name="Borah", cluster_username=None, cluster_comm
             for j in range(8):
                 prev = read_material.copy()
                 for element, height in adsorbates[abs_name]:
-                    add_adsorbate(read_material, element, height=height, position=(7.8254 * (i / 7), 7.8254 * (j / 7)))
+                    add_adsorbate(read_material, element, height=height, position=(
+                        7.8254 * (i / 7), 7.8254 * (j / 7)))
 
                 bin_folder = "0" if i < 4 else "1"
                 dir_name = f"{i}-{j}"
