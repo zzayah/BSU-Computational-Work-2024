@@ -374,3 +374,5 @@ def Create_Struct_B(filepath, write_to: str = "./"):
     ABSite(action, filepath)
     # returns nothing. writes B site .xyz struture to specifced "write_to". If write_to not defied, writes to current diretory (./).
     return
+
+Create_Struct_B(r"C:/Users/zayah/OneDrive/Desktop/BSU-COMP/BSU-Computational-Work-2024/PVAssess/PVAssess/SrNiO3.xyz")
